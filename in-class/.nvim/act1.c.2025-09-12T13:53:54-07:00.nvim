@@ -1,0 +1,15 @@
+#include <unistd.h>
+
+int main() {
+  pid_t pid = fork();
+
+  if (pid != 0) {
+    printf("parent");
+  } else {
+    printf("child & %d", pid);
+  }
+
+  while (1) {
+    sleep(1);
+  }
+}

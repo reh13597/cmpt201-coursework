@@ -1,0 +1,17 @@
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+int main(void) {
+  pid_t process = fork();
+
+  if (process == 0) {
+    printf("child process\n");
+  } else {
+    printf("parent\n");
+  }
+
+  //  while (1) {
+  //  sleep(1);
+  // }
+}

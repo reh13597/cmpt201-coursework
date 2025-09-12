@@ -1,0 +1,15 @@
+#include <unistd.h>
+
+int main() {
+  if () {
+    printf("parent");
+  } else {
+    printf("child & ", );
+  }
+
+  fork();
+
+  while (1) {
+    sleep(1);
+  }
+}
