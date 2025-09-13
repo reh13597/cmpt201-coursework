@@ -1,0 +1,21 @@
+#define _GUN_SOURCE
+#define _POSIX_C_SOURCE 200809L
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[]) {
+  char *buff = NULL;
+  size_t size = 0;
+  printf("Please enter some text: ");
+  ssize_t num_char = getline(&buff, &size, stdin);
+
+  if (num_char == -1) {
+    perror("getline failed");
+    exit(EXIT_FAILURE);
+  }
+
+  printf("You said: %s\n", buff);
+
+  free(buff);
+  exit(EXIT_SUCCESS);
+}

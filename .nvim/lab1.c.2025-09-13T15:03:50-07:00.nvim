@@ -1,0 +1,21 @@
+#define _GUN_SOURCE
+#define _POSIX_C_SOURCE 200809L
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[]) {
+  char *buff = NULL;
+  size_t size = 0;
+
+  if (argc != 2) {
+    fprintf(stderr, "Usage: %s <file>\n", argv[0]);
+    exit(EXIT_FAILURE);
+  }
+  
+  while (getline(&buff, &size, stdin) != -1) {
+    printf("Retrieved line of length %s:\n", &buff);
+  }
+
+  free(buff);
+  exit(EXIT_SUCCESS);
+}
