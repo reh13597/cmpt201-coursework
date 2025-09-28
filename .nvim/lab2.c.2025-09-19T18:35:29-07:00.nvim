@@ -19,7 +19,7 @@ int main(void) {
     }
 
     if (buff[num_char - 1] == '\n') {
-      buff[num_char - 1] = '\0';
+     buff[num_char - 1] = '\0';
     }
 
     pid_t pid = fork();
@@ -35,6 +35,8 @@ int main(void) {
       exit(1);
     }
   }
+
+  free(buff);
 
   return 0;
 }

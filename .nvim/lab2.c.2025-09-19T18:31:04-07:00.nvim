@@ -18,9 +18,9 @@ int main(void) {
       perror("getline failed");
     }
 
-    if (buff[num_char - 1] == '\n') {
-      buff[num_char - 1] = '\0';
-    }
+    //if (buff[num_char - 1] == '\n') {
+      //buff[num_char - 1] = '\0';
+    //}
 
     pid_t pid = fork();
     int wstatus = 0;
@@ -35,6 +35,8 @@ int main(void) {
       exit(1);
     }
   }
+
+  free(buff);
 
   return 0;
 }

@@ -1,0 +1,52 @@
+#define _POSIX_C_SOURCE 200809L
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  int len = 5;
+  char *lines[5] = {NULL};
+  size_t size = 0;
+  int count = 0;
+
+  while (1) {
+    printf("Enter input: ");
+    ssize_t num_char = getline(&lines[count % len], &size, stdin);
+
+    if (num_char == -1) {
+      perror("getline failed");
+      exit(EXIT_FAILURE);
+    }
+
+    if (lines[count % len][num_char - 1] == '\n') {
+      lines[count % len][num_char - 1] = '\0';
+    }
+
+    if (strcmp(lines[count % len], "print") == 0) {
+      int start;
+
+      if (count < len) {
+        start = 0;
+      } else {
+        start = (count + 1) & len;
+      }
+
+      for (int i = 0; i < len; i++) {
+        int index = (start + i) % len;
+
+        if (lines[index] != NULL) {
+          printf("%s\n", lines[index]);
+        }
+      }
+    }
+
+    count++;
+    size = 0;
+  }
+
+  for (int i = 0; i < len; i++) {
+    free(lines[i]);
+  }
+
+  return 0;
+}

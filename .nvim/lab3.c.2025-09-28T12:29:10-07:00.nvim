@@ -1,0 +1,50 @@
+#define _POSIX_C_SOURCE 200809L
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  int len = 5;
+  char *lines[len] = {};
+  size_t size = 0;
+
+  while (1) {
+    printf("Enter input: ");
+    ssize_t num_char = getline(lines, &size, stdin);
+
+    if (num_char == -1) {
+      perror("getline failed");
+      exit(EXIT_FAILURE);
+    }
+
+    printf("%s", lines[0]);
+
+    exit(EXIT_SUCCESS);
+
+    for (int i = 0; i < len; i++) {
+      char *saveptr, *ret;
+      ret = strtok_r(lines[i], " ", &saveptr);
+
+      if (ret == NULL) {
+        perror("strtok_r failed");
+        exit(EXIT_FAILURE);
+      }
+
+      while (ret != NULL) {
+        if (strcmp(ret, "print") == 0) {
+          for (int i = 0; i < len; i++) {
+            printf("\n%s", lines[i]);
+          }
+        }
+
+        ret = strtok_r(NULL, " ", &saveptr);
+      }
+    }
+  }
+
+  for (int i = 0; i < len; i++) {
+    free(lines[i]);
+  }
+
+  return 0;
+}
