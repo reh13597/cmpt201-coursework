@@ -1,0 +1,82 @@
+#define _DEFAULT_SOURCE
+#define _BSD_SOURCE
+#define BUF_SIZE 1024
+#define EXTRA_SIZE 256
+#define BLOCK_SIZE 128
+
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+struct header {
+  uint64_t size;
+  struct header *next;
+};
+
+void print_out(char *format, void *data, size_t data_size) {
+  char buf[BUF_SIZE];
+  ssize_t len = snprintf(buf, BUF_SIZE, format,
+                         data_size == sizeof(uint64_t) ? *(uint64_t *)data
+                                                       : *(void **)data);
+  if (len < 0) {
+    perror("snprintf");
+  }
+  write(STDOUT_FILENO, buf, len);
+}
+
+int main() {
+  int header_size = sizeof(struct header);
+  int data_size = BLOCK_SIZE - header_size;
+
+  // allocate a new block of memory of 256 bytes
+  void *prg_brk = sbrk(EXTRA_SIZE);
+
+  // check if sbrk caused an error
+  if (prg_brk == (void *)-1) {
+    perror("sbrk");
+    exit(EXIT_FAILURE);
+  }
+
+  // declare the first block of memory with a header starting at the program
+  // break
+  struct header *first_block = (struct header *)prg_brk;
+  first_block->next = NULL;
+  first_block->size = BLOCK_SIZE;
+  // set the data after the header in the first block to all 0's
+  memset(prg_brk + header_size, 0, data_size);
+
+  // declare the second block of memory with a header starting at the program
+  // break + 128 bytes
+  struct header *second_block = (struct header *)((char *)prg_brk + BLOCK_SIZE);
+  second_block->next = first_block;
+  second_block->size = BLOCK_SIZE;
+  // set the data after the header in the second block to all 1's
+  memset((char *)prg_brk + BLOCK_SIZE + header_size, 1, data_size);
+
+  print_out("first block:       %p\n", &first_block, sizeof(void *));
+  print_out("second block:      %p\n", &second_block, sizeof(void *));
+  print_out("first block size:  %lu\n", &first_block->size, sizeof(uint64_t));
+  print_out("first block next:  %p\n", &first_block->next, sizeof(void *));
+  print_out("second block size: %lu\n", &second_block->size, sizeof(uint64_t));
+  print_out("second block next: %p\n", &second_block->next, sizeof(void *));
+
+  // print out all the data after the header in the first block
+  char *first_block_data = (char *)first_block + header_size;
+  for (int i = 0; i < data_size; i++) {
+    // cast the data to uint64_t
+    uint64_t data = (uint64_t)first_block_data[i];
+    print_out("%d\n", &data, sizeof(uint64_t));
+  }
+
+  // print out all the data after the header in the second block
+  char *second_block_data = (char *)second_block + header_size;
+  for (int i = 0; i < data_size; i++) {
+    // cast the data to uint64_t
+    uint64_t data = (uint64_t)second_block_data[i];
+    print_out("%d\n", &data, sizeof(uint64_t));
+  }
+
+  return 0;
+}
