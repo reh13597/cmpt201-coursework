@@ -1,0 +1,33 @@
+#include <pthread.h>
+#include <stdio.h>
+
+#define NUM_THREADS 2
+#define NUM_INCREMENTS 10000000
+
+long long cnt = 0; // Global counter
+
+void *increment(void *arg) {
+  for (int i = 0; i < NUM_INCREMENTS; i++) {
+    cnt++; // Not thread-safe!
+  }
+
+  return NULL;
+}
+
+int main() {
+  pthread_t threads[NUM_THREADS];
+
+  // Create threads
+  for (int i = 0; i < NUM_THREADS; i++) {
+    pthread_create(&threads[i], NULL, increment, NULL);
+  }
+
+  // Wait for threads to finish
+  for (int i = 0; i < NUM_THREADS; i++) {
+    pthread_join(threads[i], NULL);
+  }
+
+  printf("Final value of cnt: %lld\n", cnt);
+
+  return 0;
+}
