@@ -39,12 +39,12 @@ void *handle_client(void *arg) {
   while ((num_read = read(client->cfd, buf, BUF_SIZE)) > 1) {
     buf[num_read] = '\0';
 
+    printf("Msg #   %d; Client ID %d: %s\n", total_message_count,
+           client->client_id, buf);
+
     pthread_mutex_lock(&count_mutex);
     total_message_count++;
     pthread_mutex_unlock(&count_mutex);
-
-    printf("Msg #   %d; Client ID %d: %s", total_message_count,
-           client->client_id, buf);
   }
 
   if (num_read == -1) {
@@ -95,8 +95,7 @@ int main() {
     client_id_counter++;
     pthread_mutex_unlock(&client_id_mutex);
 
-    printf("New client created! ID %d on socket FD %d\n", client->client_id,
-           cfd);
+    printf("New client created! ID %d on socket FD %d\n", client->client_id, cfd);
 
     pthread_t tid;
     pthread_create(&tid, NULL, handle_client, client);

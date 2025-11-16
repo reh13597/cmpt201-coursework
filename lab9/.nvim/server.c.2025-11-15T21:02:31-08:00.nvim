@@ -37,8 +37,6 @@ void *handle_client(void *arg) {
   char buf[BUF_SIZE];
 
   while ((num_read = read(client->cfd, buf, BUF_SIZE)) > 1) {
-    buf[num_read] = '\0';
-
     pthread_mutex_lock(&count_mutex);
     total_message_count++;
     pthread_mutex_unlock(&count_mutex);
